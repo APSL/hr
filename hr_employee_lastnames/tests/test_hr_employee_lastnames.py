@@ -3,32 +3,33 @@ from odoo.tests.common import TransactionCase
 
 
 class TestEmployeeLastnames(TransactionCase):
-    def setUp(self):
-        super().setUp()
-        self.env["ir.config_parameter"].sudo().set_param(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env["ir.config_parameter"].sudo().set_param(
             "employee_names_order", "first_last"
         )
-        self.employee_model = self.env["hr.employee"]
+        cls.employee_model = cls.env["hr.employee"]
 
         # Create 3 employees to concatenate the firstname and lastnames
         # in name_related
-        self.employee1_id = self.employee_model.create(
+        cls.employee1_id = cls.employee_model.create(
             {"firstname": "Manuel", "lastname": "Fernandez", "lastname2": "Gonzalez"}
         )
-        self.employee2_id = self.employee_model.create(
+        cls.employee2_id = cls.employee_model.create(
             {"firstname": "Jean-Pierre", "lastname": "Carnaud"}
         )
-        self.employee3_id = self.employee_model.create(
+        cls.employee3_id = cls.employee_model.create(
             {"firstname": "Jenssens", "lastname": "Famke"}
         )
 
         # Create 3 employees for split the name_related to
         # firstname and lastnames
-        self.employee10_id = self.employee_model.create(
+        cls.employee10_id = cls.employee_model.create(
             {"name": "Manuel Fernandez Gonzalez"}
         )
-        self.employee20_id = self.employee_model.create({"name": "Jean-Pierre Carnaud"})
-        self.employee30_id = self.employee_model.create({"name": "JenssensFamke"})
+        cls.employee20_id = cls.employee_model.create({"name": "Jean-Pierre Carnaud"})
+        cls.employee30_id = cls.employee_model.create({"name": "JenssensFamke"})
 
     def test_get_name_lastnames(self):
         """Validate the _get_name_lastnames method is concatenating
@@ -60,11 +61,8 @@ class TestEmployeeLastnames(TransactionCase):
         # we work on a temporary record
         new_record = self.employee_model.new(values)
 
-        updates = new_record.onchange(
-            values, ["firstname", "lastname", "lastname2"], field_onchange
-        )
-        values.update(updates.get("value", {}))
-        self.assertEqual(values["name"], "Pedro Perez Hernandez")
+        new_record._onchange_firstname_lastname()
+        self.assertEqual(new_record.name, "Pedro Perez Hernandez")
 
     def test_auto_init_name(self):
         """Validate the create method if the name is split

@@ -67,6 +67,9 @@ Contributors
 
 -  Luis Escobar <lescobar@vauxoo.com>
 -  Hugo Adan <hugo@vauxoo.com>
+-  `APSL-Nagarro <https://apsl.tech>`__:
+
+   -  Antoni Marroig <amarroig@apsl.net>
 
 Maintainers
 -----------
